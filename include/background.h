@@ -372,7 +372,7 @@ struct background_parameters_for_distributions {
 };
 
 //S function 
-double S_function(struct background *pba, double z, double *S_prime) {
+double background_S_function(struct background *pba, double z, double *S_p, double *S_pp) {
     double alpha = pba->alpha_S;
     double beta = pba->beta_S;
 
@@ -382,7 +382,8 @@ double S_function(struct background *pba, double z, double *S_prime) {
     // Calculate derivative dS/dz
     // Note: CLASS usually works with time derivatives, but you said Sp is wrt redshift.
     // Be careful with chain rule if equations need dS/dtau!
-    *S_prime = alpha * beta * pow(1.0 + z, beta - 1.0);
+    *S_p = alpha * beta * pow(1.0 + z, beta - 1.0);
+    *S_pp = alpha * beta * (beta - 1.0) * pow(1.0 + z, beta - 2.0);
 
     return S;
 }

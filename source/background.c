@@ -423,8 +423,8 @@ int background_functions(
 
   //S  values
   double z = 1.0/a - 1.0;
-  double S_val, Sp_val;
-  S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val);
+  double S_val, Sp_val, Spp_val;
+  S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val, &Spp_val);
 
 
   /** - compute each component's density and pressure */
@@ -2660,8 +2660,8 @@ int background_derivs(
   
   //S  values
   double z = 1.0/a - 1.0;
-  double S_val, Sp_val;
-  S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val);
+  double S_val, Sp_val, Spp_val;
+  S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val, &Spp_val);
 
   double d_rho_correction = Sp_val / a / (1. + S_val);
 
