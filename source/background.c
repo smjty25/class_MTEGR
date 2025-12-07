@@ -129,7 +129,8 @@
  * @return the error status
  */
 
-double background_S_function(struct background *pba, double H, double Hp,  double z, double *S_p, double *S_pp) {
+double background_S_function(struct background *pba, double H, double Hp, double z, double *S_p, double *S_pp) {
+    
     double alpha = pba->alpha_S;
     double beta = pba->beta_S;
 
@@ -137,14 +138,21 @@ double background_S_function(struct background *pba, double H, double Hp,  doubl
     double S = alpha * pow(1.0 + z, beta);
 
     // Calculate derivative dS/dz
-    // Note: CLASS usually works with time derivatives, but you said Sp is wrt redshift.
-    // Be careful with chain rule if equations need dS/dtau!
+    // *S_p temporarily holds dS/dz here
     *S_p = alpha * beta * pow(1.0 + z, beta - 1.0);  
     *S_pp = alpha * beta * (beta - 1.0) * pow(1.0 + z, beta - 2.0);
 
-    //derivative with respect to \tau not z
-    *S_p = *S_p  * (-H * (1. + z));
-    *S_pp = *S_pp *(H*H*(1. + z)*(1. + z)) + *S_p * (1. + z) * (-Hp + H*H ) ;
+    // Convert derivatives to respect to conformal time \tau
+    // d/dtau = -H(1+z) d/dz
+    
+    // S'' calculation requires chain rule on d/dtau [ -H(1+z) S_z ]
+    // S'' = H^2 (1+z)^2 S_zz + S_z ( -H'(1+z) + H^2 (1+z) )
+    
+    // We calculate S'' FIRST because we need the original S_p (dS/dz) value before we overwrite it
+    *S_pp = (*S_pp) * (H*H*(1. + z)*(1. + z)) + (*S_p) * (1. + z) * (-Hp + H*H);
+
+    // Now overwrite S_p to be dS/dtau
+    *S_p = (*S_p) * (-H * (1. + z));
 
     return S;
 }
