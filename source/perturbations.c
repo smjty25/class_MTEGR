@@ -6604,8 +6604,8 @@ int perturbations_einstein(
       }
     }
 
-    double a_prime_over_a = pvecback[pba->index_bg_a] * pvecback[pba->index_bg_H]; /* (a'/a)=aH */
-    double a_prime_over_a_prime = pvecback[pba->index_bg_H_prime] * pvecback[pba->index_bg_a] + pow(pvecback[pba->index_bg_H] * pvecback[pba->index_bg_a],2); 
+    double a_prime_over_a = ppw->pvecback[pba->index_bg_a] * ppw->pvecback[pba->index_bg_H]; /* (a'/a)=aH */
+    double a_prime_over_a_prime = ppw->pvecback[pba->index_bg_H_prime] * ppw->pvecback[pba->index_bg_a] + pow(ppw->pvecback[pba->index_bg_H] * ppw->pvecback[pba->index_bg_a],2); 
     //S  values
     double z = 1.0/a - 1.0;
     double S_val, Sp_val, Spp_val;
