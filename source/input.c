@@ -1665,6 +1665,10 @@ int input_read_parameters(struct file_content * pfc,
   /** Read verbose for input structure */
   class_read_int("input_verbose",input_verbose);
 
+  /* Read MTEGR params */
+  class_read_double("alpha_S", pba->alpha_S);
+  class_read_double("beta_S", pba->beta_S);
+
   /**
    * Read the general parameters of the
    *  background, thermodynamics, and perturbation structures

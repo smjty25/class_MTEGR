@@ -55,6 +55,11 @@ struct background
 
   //@{
 
+  //Parameters for MTEGR S(z)
+  double alpha_S; 
+  double beta_S;
+
+  
   double H0; /**< \f$ H_0 \f$: Hubble parameter (in fact, [\f$H_0/c\f$]) in \f$ Mpc^{-1} \f$ */
   double h;  /**< reduced Hubble parameter */
 
@@ -365,6 +370,23 @@ struct background_parameters_for_distributions {
   int last_index;
 
 };
+
+//S function 
+double S_function(struct background *pba, double z, double *S_prime) {
+    double alpha = pba->alpha_S;
+    double beta = pba->beta_S;
+
+    // Example: S(z) = alpha * (1+z)^beta
+    double S = alpha * pow(1.0 + z, beta);
+
+    // Calculate derivative dS/dz
+    // Note: CLASS usually works with time derivatives, but you said Sp is wrt redshift.
+    // Be careful with chain rule if equations need dS/dtau!
+    *S_prime = alpha * beta * pow(1.0 + z, beta - 1.0);
+
+    return S;
+}
+
 
 /**************************************************************/
 /* @cond INCLUDE_WITH_DOXYGEN */

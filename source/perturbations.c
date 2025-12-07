@@ -6604,12 +6604,21 @@ int perturbations_einstein(
       }
     }
 
+
+    //S  values
+    double z = 1.0/a - 1.0;
+    double S_val, Sp_val, Spp_val;
+    S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val);
+    double S_beta = Sp_val / (1. + S_val);
+    double S_beta_p = Spp_val/(1.+S_val) - S_beta * S_beta;
+    
+
     /* synchronous gauge */
     if (ppt->gauge == synchronous) {
 
       /* first equation involving total density fluctuation */
       ppw->pvecmetric[ppw->index_mt_h_prime] =
-        ( k2 * s2_squared * y[ppw->pv->index_pt_eta] + 1.5 * a2 * ppw->delta_rho)/(0.5*a_prime_over_a);  /* h' */
+        ( k2 * s2_squared * y[ppw->pv->index_pt_eta] + 1.5 * a2 * ppw->delta_rho / (1. + S_val))/(0.5*a_prime_over_a) + 3 *S_beta * y[ppw->pv->index_pt_eta]  ;  /* h' */
 
       /* eventually, infer radiation streaming approximation for
          gamma and ur (this is exactly the right place to do it
@@ -6632,13 +6641,15 @@ int perturbations_einstein(
       }
 
       /* second equation involving total velocity */
-      ppw->pvecmetric[ppw->index_mt_eta_prime] = (1.5 * a2 * ppw->rho_plus_p_theta + 0.5 * pba->K * ppw->pvecmetric[ppw->index_mt_h_prime])/k2/s2_squared;  /* eta' */
+      ppw->pvecmetric[ppw->index_mt_eta_prime] = (1.5 * a2 * ppw->rho_plus_p_theta + 0.5 * pba->K * ppw->pvecmetric[ppw->index_mt_h_prime])/k2/s2_squared - S_beta * y[ppw->pv->index_pt_eta];  /* eta' */
 
       /* third equation involving total pressure */
       ppw->pvecmetric[ppw->index_mt_h_prime_prime] =
         - 2. * a_prime_over_a * ppw->pvecmetric[ppw->index_mt_h_prime]
-        + 2. * k2 * s2_squared * y[ppw->pv->index_pt_eta]
-        - 9. * a2 * ppw->delta_p;
+        + y[ppw->pv->index_pt_eta] * (2. * k2 * s2_squared + 3.* S_beta * a_prime_over_a  - 6. * S_beta * S_beta + 6. * S_beta_p)
+        - 9. * a2 * ppw->delta_p / (1.+S_val)
+        - 18. / k2 * S_beta * a2 * ppw->rho_plus_p_theta/k2/s2_squared;
+        
 
       /* alpha = (h'+6eta')/2k^2 */
       ppw->pvecmetric[ppw->index_mt_alpha] = (ppw->pvecmetric[ppw->index_mt_h_prime] + 6.*ppw->pvecmetric[ppw->index_mt_eta_prime])/2./k2;
@@ -6667,7 +6678,7 @@ int perturbations_einstein(
         }
       }
 
-      /* fourth equation involving total shear */
+      /* fourth equation involving total shear */ // No changes needed for MTEGR
       ppw->pvecmetric[ppw->index_mt_alpha_prime] =  //TBC
         - 2. * a_prime_over_a * ppw->pvecmetric[ppw->index_mt_alpha]
         + y[ppw->pv->index_pt_eta]
@@ -9231,7 +9242,9 @@ int perturbations_derivs(double tau,
       /** - ----> synchronous gauge: cdm density only (velocity set to zero by definition of the gauge) */
 
       if (ppt->gauge == synchronous) {
-        dy[pv->index_pt_delta_cdm] = -metric_continuity; /* cdm density */
+        //dy[pv->index_pt_delta_cdm] = -metric_continuity; /* cdm density */
+        dy[pv->indext_pt_delta_cdm] = -(k2 + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/(2.*k2 + 3. * S_beta * a_prime_over_a) * pvecmetric[ppw->index_mt_h_prime]
+          + ((2.*k2 - 1.5 * a_prime_over_a * a_prime_over_a)  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ (2. * k2 + 3. * S_beta * a_prime_over_a) * y[pv->indext_pt_delta_cdm];
       }
     }
 

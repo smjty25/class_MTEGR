@@ -129,6 +129,8 @@
  * @return the error status
  */
 
+
+
 int background_at_z(
                     struct background *pba,
                     double z,
@@ -419,6 +421,12 @@ int background_functions(
   /** - pass value of \f$ a\f$ to output */
   pvecback[pba->index_bg_a] = a;
 
+  //S  values
+  double z = 1.0/a - 1.0;
+  double S_val, Sp_val;
+  S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val);
+
+
   /** - compute each component's density and pressure */
 
   /* photons */
@@ -576,10 +584,12 @@ int background_functions(
       only place where the Friedmann equation is assumed. Remember
       that densities are all expressed in units of \f$ [3c^2/8\pi G] \f$, ie
       \f$ \rho_{class} = [8 \pi G \rho_{physical} / 3 c^2]\f$ */
-  pvecback[pba->index_bg_H] = sqrt(rho_tot-pba->K/a/a);
+
+  double H = sqrt(rho_tot/(1.+S_val)-pba->K/a/a);
+  pvecback[pba->index_bg_H] = H;
 
   /** - compute derivative of H with respect to conformal time */
-  pvecback[pba->index_bg_H_prime] = - (3./2.) * (rho_tot + p_tot) * a + pba->K/a;
+  pvecback[pba->index_bg_H_prime] = - (3./2.) * (rho_tot + p_tot)/(1.+S_val) * a + pba->K/a + Sp_val * H * H;
 
   /* Total energy density*/
   pvecback[pba->index_bg_rho_tot] = rho_tot;
@@ -2608,6 +2618,8 @@ int background_derivs(
   pba =  pbpaw->pba;
   pvecback = pbpaw->pvecback;
 
+
+
   /** - scale factor a (in fact, given our normalisation conventions, this stands for a/a_0) */
   a = exp(loga);
 
@@ -2645,19 +2657,27 @@ int background_derivs(
   dy[pba->index_bi_D] = y[pba->index_bi_D_prime]/a/H;
   dy[pba->index_bi_D_prime] = -y[pba->index_bi_D_prime] + 1.5*a*rho_M*y[pba->index_bi_D]/H;
 
+  
+  //S  values
+  double z = 1.0/a - 1.0;
+  double S_val, Sp_val;
+  S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val);
+
+  double d_rho_correction = Sp_val / a / (1. + S_val);
+
   if (pba->has_dcdm == _TRUE_) {
     /** - compute dcdm density \f$ d\rho/dloga = -3 \rho - \Gamma/H \rho \f$*/
-    dy[pba->index_bi_rho_dcdm] = -3.*y[pba->index_bi_rho_dcdm] - pba->Gamma_dcdm/H*y[pba->index_bi_rho_dcdm];
+    dy[pba->index_bi_rho_dcdm] = (-3.+d_rho_correction)*y[pba->index_bi_rho_dcdm] - pba->Gamma_dcdm/H*y[pba->index_bi_rho_dcdm];
   }
 
   if ((pba->has_dcdm == _TRUE_) && (pba->has_dr == _TRUE_)) {
     /** - Compute dr density \f$ d\rho/dloga = -4\rho - \Gamma/H \rho \f$ */
-    dy[pba->index_bi_rho_dr] = -4.*y[pba->index_bi_rho_dr]+pba->Gamma_dcdm/H*y[pba->index_bi_rho_dcdm];
+    dy[pba->index_bi_rho_dr] = (-4.+d_rho_correction)*y[pba->index_bi_rho_dr]+pba->Gamma_dcdm/H*y[pba->index_bi_rho_dcdm];
   }
 
   if (pba->has_fld == _TRUE_) {
     /** - Compute fld density \f$ d\rho/dloga = -3 (1+w_{fld}(a)) \rho \f$ */
-    dy[pba->index_bi_rho_fld] = -3.*(1.+pvecback[pba->index_bg_w_fld])*y[pba->index_bi_rho_fld];
+    dy[pba->index_bi_rho_fld] = (-3.*(1.+pvecback[pba->index_bg_w_fld])+d_rho_correction)*y[pba->index_bi_rho_fld];
   }
 
   if (pba->has_scf == _TRUE_) {
