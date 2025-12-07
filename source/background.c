@@ -439,6 +439,8 @@ int background_functions(
   /** - pass value of \f$ a\f$ to output */
   pvecback[pba->index_bg_a] = a;
 
+  double a_prime_over_a = pvecback[pba->index_bg_a] * pvecback[pba->index_bg_H]; /* (a'/a)=aH */
+  double a_prime_over_a_prime = pvecback[pba->index_bg_H_prime] * pvecback[pba->index_bg_a] + pow(pvecback[pba->index_bg_H] * pvecback[pba->index_bg_a],2); 
   //S  values
   double z = 1.0/a - 1.0;
   double S_val, Sp_val, Spp_val;
@@ -2677,8 +2679,13 @@ int background_derivs(
 
   
   //S  values
+  
+  double a_prime_over_a = pvecback[pba->index_bg_a] * pvecback[pba->index_bg_H]; /* (a'/a)=aH */
+  double a_prime_over_a_prime = pvecback[pba->index_bg_H_prime] * pvecback[pba->index_bg_a] + pow(pvecback[pba->index_bg_H] * pvecback[pba->index_bg_a],2); 
+  
   double z = 1.0/a - 1.0;
   double S_val, Sp_val, Spp_val;
+  
   S_val = background_S_function(pba, a_prime_over_a, a_prime_over_a_prime , z, &Sp_val , &Spp_val);
 
   double d_rho_correction = Sp_val / a / (1. + S_val);
