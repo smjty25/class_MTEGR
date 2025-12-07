@@ -129,7 +129,7 @@
  * @return the error status
  */
 
-double background_S_function(struct background *pba, double z, double *S_p, double *S_pp) {
+double background_S_function(struct background *pba, double H, double Hp,  double z, double *S_p, double *S_pp) {
     double alpha = pba->alpha_S;
     double beta = pba->beta_S;
 
@@ -139,8 +139,12 @@ double background_S_function(struct background *pba, double z, double *S_p, doub
     // Calculate derivative dS/dz
     // Note: CLASS usually works with time derivatives, but you said Sp is wrt redshift.
     // Be careful with chain rule if equations need dS/dtau!
-    *S_p = alpha * beta * pow(1.0 + z, beta - 1.0);
+    *S_p = alpha * beta * pow(1.0 + z, beta - 1.0);  
     *S_pp = alpha * beta * (beta - 1.0) * pow(1.0 + z, beta - 2.0);
+
+    //derivative with respect to \tau not z
+    *S_p = *S_p  * (-H * (1. + z));
+    *S_pp = *S_pp *(H*H*(1. + z)*(1. + z)) + *S_p * (1. + z) * (-Hp + H*H ) ;
 
     return S;
 }
@@ -438,7 +442,7 @@ int background_functions(
   //S  values
   double z = 1.0/a - 1.0;
   double S_val, Sp_val, Spp_val;
-  S_val = background_S_function(pba, z, &Sp_val, &Spp_val);
+  S_val = background_S_function(pba, a_prime_over_a, a_prime_over_a_prime , z, &Sp_val , &Spp_val);
 
 
   /** - compute each component's density and pressure */
@@ -2675,7 +2679,7 @@ int background_derivs(
   //S  values
   double z = 1.0/a - 1.0;
   double S_val, Sp_val, Spp_val;
-  S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val, &Spp_val);
+  S_val = background_S_function(pba, a_prime_over_a, a_prime_over_a_prime , z, &Sp_val , &Spp_val);
 
   double d_rho_correction = Sp_val / a / (1. + S_val);
 

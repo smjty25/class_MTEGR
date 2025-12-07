@@ -372,7 +372,7 @@ struct background_parameters_for_distributions {
 };
 
 //S function 
-double background_S_function(struct background *, double , double *, double *);
+double background_S_function(struct background *, double, double, double , double *, double *);
 
 
 /**************************************************************/
