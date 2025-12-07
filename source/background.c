@@ -438,7 +438,7 @@ int background_functions(
   //S  values
   double z = 1.0/a - 1.0;
   double S_val, Sp_val, Spp_val;
-  S_val = background_S_function(pba, pvecback[pba->index_bg_z], &Sp_val, &Spp_val);
+  S_val = background_S_function(pba, z, &Sp_val, &Spp_val);
 
 
   /** - compute each component's density and pressure */
