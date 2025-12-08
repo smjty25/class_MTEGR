@@ -6614,7 +6614,7 @@ int perturbations_einstein(
     double S_beta_p = Spp_val/(1.+S_val) - S_beta * S_beta;
     
     //javad:
-    printf("\ntest values: z: %e, S:%e, Sp: %e , Spp: %e, beta:%e, betap:%e", z , S_val, Sp_val, S_beta, S_beta_p );
+    printf("\ntest values: k: %e, z: %e, S:%e, Sp: %e , Spp: %e, beta:%e, betap:%e", k,  z , S_val, Sp_val, S_beta, S_beta_p );
 
     /* synchronous gauge */
     if (ppt->gauge == synchronous) {
