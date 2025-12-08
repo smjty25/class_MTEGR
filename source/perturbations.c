@@ -6651,7 +6651,7 @@ int perturbations_einstein(
         - 2. * a_prime_over_a * ppw->pvecmetric[ppw->index_mt_h_prime]
         + y[ppw->pv->index_pt_eta] * (2. * k2 * s2_squared + 3.* S_beta * a_prime_over_a  - 6. * S_beta * S_beta + 6. * S_beta_p)
         - 9. * a2 * ppw->delta_p / (1.+S_val)
-        - 18. / k2 * S_beta * a2 * ppw->rho_plus_p_theta/k2/s2_squared;
+        - 18. / k2 * S_beta * a2 * ppw->rho_plus_p_theta;
         
       printf("\n \t hp: %e ",  ppw->pvecmetric[ppw->index_mt_h_prime_prime]  );
 
