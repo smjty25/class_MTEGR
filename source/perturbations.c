@@ -9265,7 +9265,7 @@ int perturbations_derivs(double tau,
       if (ppt->gauge == synchronous) {
         //dy[pv->index_pt_delta_cdm] = -metric_continuity; /* cdm density */
         dy[pv->index_pt_delta_cdm] = -(k2 + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/(2.*k2 + 3. * S_beta * a_prime_over_a) * pvecmetric[ppw->index_mt_h_prime]
-          + ((2.*k2 - 1.5 * a_prime_over_a * a_prime_over_a)  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ (2. * k2 + 3. * S_beta * a_prime_over_a) * y[pv->index_pt_delta_cdm];
+          + ((2.*k2 - 1.5 * a_prime_over_a * a_prime_over_a) * S_beta  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ (2. * k2 + 3. * S_beta * a_prime_over_a) * y[pv->index_pt_delta_cdm];
         
         printf("\n \t dcdmp: %e", dy[pv->index_pt_delta_cdm]);
 
