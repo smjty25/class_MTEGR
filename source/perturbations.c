@@ -6623,6 +6623,8 @@ int perturbations_einstein(
       ppw->pvecmetric[ppw->index_mt_h_prime] =
         ( k2 * s2_squared * y[ppw->pv->index_pt_eta] + 1.5 * a2 * ppw->delta_rho / (1. + S_val))/(0.5*a_prime_over_a) + 3 *S_beta * y[ppw->pv->index_pt_eta]  ;  /* h' */
 
+        printf("\n \t hp: %e ",  ppw->pvecmetric[ppw->index_mt_h_prime]  );
+
       /* eventually, infer radiation streaming approximation for
          gamma and ur (this is exactly the right place to do it
          because the result depends on h_prime) */
@@ -6645,6 +6647,9 @@ int perturbations_einstein(
 
       /* second equation involving total velocity */
       ppw->pvecmetric[ppw->index_mt_eta_prime] = (1.5 * a2 * ppw->rho_plus_p_theta + 0.5 * pba->K * ppw->pvecmetric[ppw->index_mt_h_prime])/k2/s2_squared - S_beta * y[ppw->pv->index_pt_eta];  /* eta' */
+
+      printf("\n \t etap: %e ",  ppw->pvecmetric[ppw->index_mt_eta_prime]  );
+
 
       /* third equation involving total pressure */
       ppw->pvecmetric[ppw->index_mt_h_prime_prime] =
