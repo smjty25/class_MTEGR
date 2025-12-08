@@ -6613,8 +6613,6 @@ int perturbations_einstein(
     double S_beta = Sp_val / (1. + S_val);
     double S_beta_p = Spp_val/(1.+S_val) - S_beta * S_beta;
     
-    //javad:
-    printf("\ntest values: k: %e, z: %e, S:%e, Sp: %e , Spp: %e, beta:%e, betap:%e", k,  z , S_val, Sp_val, S_beta, S_beta_p );
 
     /* synchronous gauge */
     if (ppt->gauge == synchronous) {
@@ -6622,8 +6620,6 @@ int perturbations_einstein(
       /* first equation involving total density fluctuation */
       ppw->pvecmetric[ppw->index_mt_h_prime] =
         ( k2 * s2_squared * y[ppw->pv->index_pt_eta] + 1.5 * a2 * ppw->delta_rho / (1. + S_val))/(0.5*a_prime_over_a) + 3 *S_beta * y[ppw->pv->index_pt_eta]  ;  /* h' */
-
-        printf("\n \t hp: %e ",  ppw->pvecmetric[ppw->index_mt_h_prime]  );
 
       /* eventually, infer radiation streaming approximation for
          gamma and ur (this is exactly the right place to do it
@@ -6648,9 +6644,6 @@ int perturbations_einstein(
       /* second equation involving total velocity */
       ppw->pvecmetric[ppw->index_mt_eta_prime] = (1.5 * a2 * ppw->rho_plus_p_theta + 0.5 * pba->K * ppw->pvecmetric[ppw->index_mt_h_prime])/k2/s2_squared - S_beta * y[ppw->pv->index_pt_eta];  /* eta' */
 
-      printf("\n \t etap: %e ",  ppw->pvecmetric[ppw->index_mt_eta_prime]  );
-
-
       /* third equation involving total pressure */
       ppw->pvecmetric[ppw->index_mt_h_prime_prime] =
         - 2. * a_prime_over_a * ppw->pvecmetric[ppw->index_mt_h_prime]
@@ -6658,8 +6651,6 @@ int perturbations_einstein(
         - 9. * a2 * ppw->delta_p / (1.+S_val)
         - 18. / k2 * S_beta * a2 * ppw->rho_plus_p_theta;
         
-      printf("\n \t hp: %e ",  ppw->pvecmetric[ppw->index_mt_h_prime_prime]  );
-
 
       /* alpha = (h'+6eta')/2k^2 */
       ppw->pvecmetric[ppw->index_mt_alpha] = (ppw->pvecmetric[ppw->index_mt_h_prime] + 6.*ppw->pvecmetric[ppw->index_mt_eta_prime])/2./k2;
@@ -9267,8 +9258,6 @@ int perturbations_derivs(double tau,
         dy[pv->index_pt_delta_cdm] = -(k2 + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/(2.*k2 + 3. * S_beta * a_prime_over_a) * pvecmetric[ppw->index_mt_h_prime]
           + ((2.*k2 - 1.5 * a_prime_over_a * a_prime_over_a) * S_beta  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ (2. * k2 + 3. * S_beta * a_prime_over_a) * y[pv->index_pt_delta_cdm];
         
-        printf("\n \t dcdmp: %e", dy[pv->index_pt_delta_cdm]);
-
       }
     }
 
