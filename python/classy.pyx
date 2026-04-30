@@ -169,15 +169,13 @@ cdef class Class:
     def H0(self):
       """Return the Hubble constant today in units of km/s/Mpc"""
       return CallableFloat(self.ba.H0)
-        @property
-        
+    
+    @property 
     def alpha_S(self):
-      """Return the Hubble constant today in units of km/s/Mpc"""
-      return CallableFloat(self.ba.alpha_S)
-     @property
+        return CallableFloat(self.ba.alpha_S)
+    @property
     def beta_S(self):
-      """Return the Hubble constant today in units of km/s/Mpc"""
-      return CallableFloat(self.ba.beta_S)
+          return CallableFloat(self.ba.beta_S)
 
     
     @property
