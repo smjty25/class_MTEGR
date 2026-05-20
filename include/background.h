@@ -56,8 +56,8 @@ struct background
   //@{
 
   //Parameters for MTEGR S(z)
-  double alpha_S; 
-  double beta_S;
+  double mtegr_alpha; 
+  double mtegr_beta;
 
   
   double H0; /**< \f$ H_0 \f$: Hubble parameter (in fact, [\f$H_0/c\f$]) in \f$ Mpc^{-1} \f$ */
@@ -374,8 +374,8 @@ struct background_parameters_for_distributions {
 //S function 
 static inline  double background_S_function(struct background *pba, double H, double Hp, double z, double *S_p, double *S_pp) {
     
-    double alpha = pba->alpha_S;
-    double beta = pba->beta_S;
+    double alpha = pba->mtegr_alpha;
+    double beta = pba->mtegr_beta;
 
     // Example: S(z) = alpha * (1+z)^beta
     double S = alpha * pow(1.0 + z, beta);
