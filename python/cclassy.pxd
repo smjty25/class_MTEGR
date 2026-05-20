@@ -78,8 +78,8 @@ cdef extern from "class.h":
         double h
         double H0
         
-        double alpha_S; 
-        double beta_S;
+        double mtegr_alpha; 
+        double mtegr_beta;
         
         double age
         double conformal_age
