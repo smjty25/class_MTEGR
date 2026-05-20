@@ -171,11 +171,11 @@ cdef class Class:
       return CallableFloat(self.ba.H0)
     
     @property 
-    def alpha_S(self):
-        return CallableFloat(self.ba.alpha_S)
+    def mtegr_alpha(self):
+        return CallableFloat(self.ba.mtegr_alpha)
     @property
-    def beta_S(self):
-          return CallableFloat(self.ba.beta_S)
+    def mtegr_beta(self):
+          return CallableFloat(self.ba.mtegr_beta)
 
     
     @property
