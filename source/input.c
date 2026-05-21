@@ -1666,8 +1666,8 @@ int input_read_parameters(struct file_content * pfc,
   class_read_int("input_verbose",input_verbose);
 
   /* Read MTEGR params */
-  class_read_double("alpha_S", pba->alpha_S);
-  class_read_double("beta_S", pba->beta_S);
+  class_read_double("mtegr_alpha", pba->mtegr_alpha);
+  class_read_double("mtegr_beta", pba->mtegr_beta);
 
   /**
    * Read the general parameters of the
