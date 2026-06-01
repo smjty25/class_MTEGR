@@ -1668,7 +1668,9 @@ int input_read_parameters(struct file_content * pfc,
   /* Read MTEGR params */
   class_read_double("mtegr_alpha", pba->mtegr_alpha);
   class_read_double("mtegr_beta", pba->mtegr_beta);
-
+  class_read_double("mtegr_gamma", pba->mtegr_gamma);
+  class_read_double("mtegr_delta", pba->mtegr_delta);
+   
   /**
    * Read the general parameters of the
    *  background, thermodynamics, and perturbation structures
