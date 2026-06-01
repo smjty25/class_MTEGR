@@ -6612,7 +6612,7 @@ int perturbations_einstein(
     S_val = background_S_function(pba, ppw->pvecback[pba->index_bg_H], ppw->pvecback[pba->index_bg_H_prime] , z, &Sp_val , &Spp_val);
     double S_beta = Sp_val / (1. + S_val);
     double S_beta_p = Spp_val/(1.+S_val) - S_beta * S_beta;
-    
+    printf("- %f, %f, %f \n",S_val, Sp_val, Spp_val);
 
     /* synchronous gauge */
     if (ppt->gauge == synchronous) {
