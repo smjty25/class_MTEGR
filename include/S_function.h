@@ -1,123 +1,50 @@
-/**
- * Smooth step function (C2 continuous) mapping x from [x0,x1] to [f0,f1].
- * For x outside [x0,x1], the caller should ensure it's used only within the interval.
- * Formula: f0 + (f1-f0) * (6y^5 - 15y^4 + 10y^3), where y = (x-x0)/(x1-x0).
- */
+#include <math.h>
 
-/*
-static inline double smooth_step(double x, double x0, double x1, double f0, double f1) {
-    double y = (x - x0) / (x1 - x0);
-    double y2 = y * y;
-    double y3 = y2 * y;
-    double y4 = y2 * y2;
-    double y5 = y4 * y;
-    double poly = 6.0 * y5 - 15.0 * y4 + 10.0 * y3;
-    return f0 + (f1 - f0) * poly;
+// Helper: hyperbolic tangent and its derivatives (sech^2, -2 sech^2 tanh)
+static inline double tanh_deriv(double u) {
+    double sech2 = 1.0 / (cosh(u) * cosh(u));
+    return sech2;
+}
+static inline double tanh_deriv2(double u) {
+    double sech2 = 1.0 / (cosh(u) * cosh(u));
+    return -2.0 * sech2 * tanh(u);
 }
 
-
-// First derivative of smooth_step with respect to x.
-
-static inline double smooth_step_p(double x, double x0, double x1, double f0, double f1) {
-    double y = (x - x0) / (x1 - x0);
-    double factor = (f1 - f0) / (x1 - x0);
-    // Derivative = factor * 30 * y^2 * (1-y)^2
-    double t = y * (1.0 - y);
-    return factor * 30.0 * t * t;   // 30 * y^2 * (1-y)^2
+// Helper: Gaussian exp(-u^2) and its derivatives
+static inline double gauss(double u) {
+    return exp(-u * u);
+}
+static inline double gauss_deriv(double u) {
+    return -2.0 * u * exp(-u * u);
+}
+static inline double gauss_deriv2(double u) {
+    return (4.0 * u * u - 2.0) * exp(-u * u);
 }
 
-
-// Second derivative of smooth_step with respect to x.
-
-static inline double smooth_step_pp(double x, double x0, double x1, double f0, double f1) {
-    double y = (x - x0) / (x1 - x0);
-    double factor = (f1 - f0) / ((x1 - x0) * (x1 - x0));
-    // Second derivative = factor * 60 * y * (1-y) * (1-2y)
-    return factor * 60.0 * y * (1.0 - y) * (1.0 - 2.0 * y);
-}
-*/
-
-/**
- * Smooth step function using cosine (C-infinity continuous)
- * Maps x from [x0,x1] to [f0,f1]
- */
-static inline double smooth_step(double x, double x0, double x1, double f0, double f1) {
-    double y = (x - x0) / (x1 - x0);  // y in [0,1]
-    // Use (1 - cos(pi*y))/2 which smoothly goes from 0 to 1
-    double poly = 0.5 * (1.0 - cos(M_PI * y));
-    return f0 + (f1 - f0) * poly;
+// F(x) = 1 + (alpha-1)*H(x) + (beta - (1+alpha)/2)*G(x)
+// where H(x) = (1+tanh((x-gamma)/delta))/2, G(x) = exp(-((x-gamma)/delta)^2)
+double F_smooth(double x, double alpha, double beta, double gamma, double delta) {
+    double u = (x - gamma) / delta;
+    double H = (1.0 + tanh(u)) / 2.0;
+    double G = gauss(u);
+    double offset = beta - (1.0 + alpha) / 2.0;
+    return 1.0 + (alpha - 1.0) * H + offset * G;
 }
 
-/**
- * First derivative of cosine smooth_step with respect to x
- */
-static inline double smooth_step_p(double x, double x0, double x1, double f0, double f1) {
-    double y = (x - x0) / (x1 - x0);
-    double factor = (f1 - f0) / (x1 - x0);
-    // d/dx[(1-cos(pi*y))/2] = (pi/2)*sin(pi*y) * dy/dx
-    return factor * 0.5 * M_PI * sin(M_PI * y);
+// First derivative dF/dx
+double Fp_smooth(double x, double alpha, double beta, double gamma, double delta) {
+    double u = (x - gamma) / delta;
+    double dH = tanh_deriv(u) / (2.0 * delta);          // dH/dx = (1/2)*sech^2(u)/delta
+    double dG = gauss_deriv(u) / delta;                 // dG/dx = -2u*exp(-u^2)/delta
+    double offset = beta - (1.0 + alpha) / 2.0;
+    return (alpha - 1.0) * dH + offset * dG;
 }
 
-/**
- * Second derivative of cosine smooth_step with respect to x
- */
-static inline double smooth_step_pp(double x, double x0, double x1, double f0, double f1) {
-    double y = (x - x0) / (x1 - x0);
-    double factor = (f1 - f0) / ((x1 - x0) * (x1 - x0));
-    // d²/dx² = (pi²/2)*cos(pi*y) * (dy/dx)²
-    return factor * 0.5 * M_PI * M_PI * cos(M_PI * y);
-}
-
-/**
- * Piecewise function F(x) defined as:
- *   F(x) = 1                         for x <= gamma - delta
- *          smooth_step(x, gamma-delta, gamma, 1, beta)   for gamma-delta < x < gamma
- *          smooth_step(x, gamma, gamma+delta, beta, alpha) for gamma <= x < gamma+delta
- *          alpha                      for x >= gamma+delta
- */
-inline double F(double x, double alpha, double beta, double gamma, double delta) {
-    double left = gamma - delta;
-    double right = gamma + delta;
-
-    if (x <= left) {
-        return 1.0;
-    } else if (x < gamma) {
-        return smooth_step(x, left, gamma, 1.0, beta);
-    } else if (x < right) {
-        return smooth_step(x, gamma, right, beta, alpha);
-    } else {
-        return alpha;
-    }
-}
-
-/**
- * First derivative of F(x).
- */
-inline double Fp(double x, double alpha, double beta, double gamma, double delta) {
-    double left = gamma - delta;
-    double right = gamma + delta;
-
-    if (x <= left || x >= right) {
-        return 0.0;               // constant regions
-    } else if (x < gamma) {
-        return smooth_step_p(x, left, gamma, 1.0, beta);
-    } else {  // x between gamma and gamma+delta (including gamma)
-        return smooth_step_p(x, gamma, right, beta, alpha);
-    }
-}
-
-/**
- * Second derivative of F(x).
- */
-inline double Fpp(double x, double alpha, double beta, double gamma, double delta) {
-    double left = gamma - delta;
-    double right = gamma + delta;
-
-    if (x <= left || x >= right) {
-        return 0.0;               // constant regions
-    } else if (x < gamma) {
-        return smooth_step_pp(x, left, gamma, 1.0, beta);
-    } else {  // x between gamma and gamma+delta (including gamma)
-        return smooth_step_pp(x, gamma, right, beta, alpha);
-    }
+// Second derivative d²F/dx²
+double Fpp_smooth(double x, double alpha, double beta, double gamma, double delta) {
+    double u = (x - gamma) / delta;
+    double d2H = tanh_deriv2(u) / (2.0 * delta * delta);   // d²H/dx² = (1/2)*d²(tanh)/du² / delta²
+    double d2G = gauss_deriv2(u) / (delta * delta);        // d²G/dx² = (4u²-2)*exp(-u²) / delta²
+    double offset = beta - (1.0 + alpha) / 2.0;
+    return (alpha - 1.0) * d2H + offset * d2G;
 }

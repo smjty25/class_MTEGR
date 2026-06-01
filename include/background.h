@@ -381,13 +381,12 @@ static inline  double background_S_function(struct background *pba, double H, do
     double gamma = pba->mtegr_gamma;
     double delta = pba->mtegr_delta;
     
-    // Example: S(z) = alpha * (1+z)^beta
-    double S = 2.0 * F(z,alpha,beta,gamma,delta) - 1.0;
 
-    // Calculate derivative dS/dz
-    // *S_p temporarily holds dS/dz here
-    *S_p = 2.0 * Fp(z,alpha,beta,gamma,delta);
-    *S_pp = 2.0 * Fpp(z,alpha,beta,gamma,delta);
+    double S_0 = F(0,alpha,beta,gamma,delta);
+
+    double S =  (1.0 + S_0) *   F(z,alpha,beta,gamma,delta) - 1.0;
+    *S_p =      (1.0 + S_0) *   Fp(z,alpha,beta,gamma,delta);
+    *S_pp =     (1.0 + S_0) *   Fpp(z,alpha,beta,gamma,delta);
 
     // Convert derivatives to respect to conformal time \tau
     // d/dtau = -H(1+z) d/dz
