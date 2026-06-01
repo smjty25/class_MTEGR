@@ -58,7 +58,8 @@ struct background
   //Parameters for MTEGR S(z)
   double mtegr_alpha; 
   double mtegr_beta;
-
+  double mtegr_gamma; 
+  double mtegr_delta;
   
   double H0; /**< \f$ H_0 \f$: Hubble parameter (in fact, [\f$H_0/c\f$]) in \f$ Mpc^{-1} \f$ */
   double h;  /**< reduced Hubble parameter */
@@ -376,7 +377,9 @@ static inline  double background_S_function(struct background *pba, double H, do
     
     double alpha = pba->mtegr_alpha;
     double beta = pba->mtegr_beta;
-
+    double gamma = pba->mtegr_gamma;
+    double delta = pba->mtegr_delta;
+    
     // Example: S(z) = alpha * (1+z)^beta
     double S = alpha * pow(1.0 + z, beta);
 
