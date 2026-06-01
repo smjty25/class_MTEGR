@@ -80,6 +80,8 @@ cdef extern from "class.h":
         
         double mtegr_alpha; 
         double mtegr_beta;
+        double mtegr_gamma; 
+        double mtegr_delta;
         
         double age
         double conformal_age
