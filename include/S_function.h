@@ -23,7 +23,7 @@ static inline double gauss_deriv2(double u) {
 
 // F(x) = 1 + (alpha-1)*H(x) + (beta - (1+alpha)/2)*G(x)
 // where H(x) = (1+tanh((x-gamma)/delta))/2, G(x) = exp(-((x-gamma)/delta)^2)
-double F_smooth(double x, double alpha, double beta, double gamma, double delta) {
+double F(double x, double alpha, double beta, double gamma, double delta) {
     double u = (x - gamma) / delta;
     double H = (1.0 + tanh(u)) / 2.0;
     double G = gauss(u);
@@ -32,7 +32,7 @@ double F_smooth(double x, double alpha, double beta, double gamma, double delta)
 }
 
 // First derivative dF/dx
-double Fp_smooth(double x, double alpha, double beta, double gamma, double delta) {
+double Fp(double x, double alpha, double beta, double gamma, double delta) {
     double u = (x - gamma) / delta;
     double dH = tanh_deriv(u) / (2.0 * delta);          // dH/dx = (1/2)*sech^2(u)/delta
     double dG = gauss_deriv(u) / delta;                 // dG/dx = -2u*exp(-u^2)/delta
@@ -41,7 +41,7 @@ double Fp_smooth(double x, double alpha, double beta, double gamma, double delta
 }
 
 // Second derivative d²F/dx²
-double Fpp_smooth(double x, double alpha, double beta, double gamma, double delta) {
+double Fpp(double x, double alpha, double beta, double gamma, double delta) {
     double u = (x - gamma) / delta;
     double d2H = tanh_deriv2(u) / (2.0 * delta * delta);   // d²H/dx² = (1/2)*d²(tanh)/du² / delta²
     double d2G = gauss_deriv2(u) / (delta * delta);        // d²G/dx² = (4u²-2)*exp(-u²) / delta²
