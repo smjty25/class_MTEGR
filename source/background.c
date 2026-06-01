@@ -421,12 +421,11 @@ int background_functions(
   /** - pass value of \f$ a\f$ to output */
   pvecback[pba->index_bg_a] = a;
 
-  double a_prime_over_a = 0.;//pvecback[pba->index_bg_a] * pvecback[pba->index_bg_H]; /* (a'/a)=aH */
-  double a_prime_over_a_prime = 0.;//pvecback[pba->index_bg_H_prime] * pvecback[pba->index_bg_a] + pow(pvecback[pba->index_bg_H] * pvecback[pba->index_bg_a],2); 
+
   //S  values
   double z = 1.0/a - 1.0;
   double S_val, Sp_val, Spp_val;
-  S_val = background_S_function(pba, a_prime_over_a, a_prime_over_a_prime , z, &Sp_val , &Spp_val); //only calculating S_val properly
+  S_val = background_S_function(pba, 0., 0. , z, &Sp_val , &Spp_val); //only calculating S_val properly
 
 
   /** - compute each component's density and pressure */
@@ -592,8 +591,7 @@ int background_functions(
 
 
   //calculating Sp
-  a_prime_over_a = pvecback[pba->index_bg_a] * pvecback[pba->index_bg_H]; /* (a'/a)=aH */
-  S_val = background_S_function(pba, a_prime_over_a, a_prime_over_a_prime , z, &Sp_val , &Spp_val); //not calculating Spp_val properly
+  S_val = background_S_function(pba, pvecback[pba->index_bg_H], 0. , z, &Sp_val , &Spp_val); //not calculating Spp_val properly
 
   /** - compute derivative of H with respect to conformal time */
   pvecback[pba->index_bg_H_prime] = - (3./2.) * (rho_tot + p_tot)/(1.+S_val) * a + pba->K/a - Sp_val * H /(1.+S_val);
@@ -2668,13 +2666,11 @@ int background_derivs(
   
   //S  values
   
-  double a_prime_over_a = pvecback[pba->index_bg_a] * pvecback[pba->index_bg_H]; /* (a'/a)=aH */
-  double a_prime_over_a_prime = 0.;//pvecback[pba->index_bg_H_prime] * pvecback[pba->index_bg_a] + pow(pvecback[pba->index_bg_H] * pvecback[pba->index_bg_a],2); 
-  
+
   double z = 1.0/a - 1.0;
   double S_val, Sp_val, Spp_val;
   
-  S_val = background_S_function(pba, a_prime_over_a, a_prime_over_a_prime , z, &Sp_val , &Spp_val);//not calculating Spp properly
+  S_val = background_S_function(pba,  pvecback[pba->index_bg_H], 0. , z, &Sp_val , &Spp_val);//not calculating Spp properly
 
   double d_rho_correction = -Sp_val / H / a / (1. + S_val);
 
