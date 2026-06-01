@@ -41,7 +41,7 @@ static inline double smooth_step_pp(double x, double x0, double x1, double f0, d
  *          smooth_step(x, gamma, gamma+delta, beta, alpha) for gamma <= x < gamma+delta
  *          alpha                      for x >= gamma+delta
  */
-double F(double x, double alpha, double beta, double gamma, double delta) {
+inline double F(double x, double alpha, double beta, double gamma, double delta) {
     double left = gamma - delta;
     double right = gamma + delta;
 
@@ -59,7 +59,7 @@ double F(double x, double alpha, double beta, double gamma, double delta) {
 /**
  * First derivative of F(x).
  */
-double Fp(double x, double alpha, double beta, double gamma, double delta) {
+inline double Fp(double x, double alpha, double beta, double gamma, double delta) {
     double left = gamma - delta;
     double right = gamma + delta;
 
@@ -75,7 +75,7 @@ double Fp(double x, double alpha, double beta, double gamma, double delta) {
 /**
  * Second derivative of F(x).
  */
-double Fpp(double x, double alpha, double beta, double gamma, double delta) {
+inline double Fpp(double x, double alpha, double beta, double gamma, double delta) {
     double left = gamma - delta;
     double right = gamma + delta;
 
