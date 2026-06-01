@@ -176,7 +176,13 @@ cdef class Class:
     @property
     def mtegr_beta(self):
           return CallableFloat(self.ba.mtegr_beta)
-
+    @property 
+    def mtegr_gamma(self):
+        return CallableFloat(self.ba.mtegr_gamma)
+    @property
+    def mtegr_delta(self):
+          return CallableFloat(self.ba.mtegr_delta)
+        
     
     @property
     def h(self):
