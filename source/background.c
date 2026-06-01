@@ -2676,7 +2676,7 @@ int background_derivs(
   
   S_val = background_S_function(pba, a_prime_over_a, a_prime_over_a_prime , z, &Sp_val , &Spp_val);//not calculating Spp properly
 
-  double d_rho_correction = -Sp_val / H / (1. + S_val);
+  double d_rho_correction = -Sp_val / H / a / (1. + S_val);
 
   if (pba->has_dcdm == _TRUE_) {
     /** - compute dcdm density \f$ d\rho/dloga = -3 \rho - \Gamma/H \rho \f$*/
