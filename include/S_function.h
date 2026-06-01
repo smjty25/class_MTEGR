@@ -3,6 +3,8 @@
  * For x outside [x0,x1], the caller should ensure it's used only within the interval.
  * Formula: f0 + (f1-f0) * (6y^5 - 15y^4 + 10y^3), where y = (x-x0)/(x1-x0).
  */
+
+/*
 static inline double smooth_step(double x, double x0, double x1, double f0, double f1) {
     double y = (x - x0) / (x1 - x0);
     double y2 = y * y;
@@ -13,9 +15,9 @@ static inline double smooth_step(double x, double x0, double x1, double f0, doub
     return f0 + (f1 - f0) * poly;
 }
 
-/**
- * First derivative of smooth_step with respect to x.
- */
+
+// First derivative of smooth_step with respect to x.
+
 static inline double smooth_step_p(double x, double x0, double x1, double f0, double f1) {
     double y = (x - x0) / (x1 - x0);
     double factor = (f1 - f0) / (x1 - x0);
@@ -24,14 +26,46 @@ static inline double smooth_step_p(double x, double x0, double x1, double f0, do
     return factor * 30.0 * t * t;   // 30 * y^2 * (1-y)^2
 }
 
-/**
- * Second derivative of smooth_step with respect to x.
- */
+
+// Second derivative of smooth_step with respect to x.
+
 static inline double smooth_step_pp(double x, double x0, double x1, double f0, double f1) {
     double y = (x - x0) / (x1 - x0);
     double factor = (f1 - f0) / ((x1 - x0) * (x1 - x0));
     // Second derivative = factor * 60 * y * (1-y) * (1-2y)
     return factor * 60.0 * y * (1.0 - y) * (1.0 - 2.0 * y);
+}
+*/
+
+/**
+ * Smooth step function using cosine (C-infinity continuous)
+ * Maps x from [x0,x1] to [f0,f1]
+ */
+static inline double smooth_step(double x, double x0, double x1, double f0, double f1) {
+    double y = (x - x0) / (x1 - x0);  // y in [0,1]
+    // Use (1 - cos(pi*y))/2 which smoothly goes from 0 to 1
+    double poly = 0.5 * (1.0 - cos(M_PI * y));
+    return f0 + (f1 - f0) * poly;
+}
+
+/**
+ * First derivative of cosine smooth_step with respect to x
+ */
+static inline double smooth_step_p(double x, double x0, double x1, double f0, double f1) {
+    double y = (x - x0) / (x1 - x0);
+    double factor = (f1 - f0) / (x1 - x0);
+    // d/dx[(1-cos(pi*y))/2] = (pi/2)*sin(pi*y) * dy/dx
+    return factor * 0.5 * M_PI * sin(M_PI * y);
+}
+
+/**
+ * Second derivative of cosine smooth_step with respect to x
+ */
+static inline double smooth_step_pp(double x, double x0, double x1, double f0, double f1) {
+    double y = (x - x0) / (x1 - x0);
+    double factor = (f1 - f0) / ((x1 - x0) * (x1 - x0));
+    // d²/dx² = (pi²/2)*cos(pi*y) * (dy/dx)²
+    return factor * 0.5 * M_PI * M_PI * cos(M_PI * y);
 }
 
 /**
