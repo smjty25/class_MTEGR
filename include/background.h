@@ -383,7 +383,7 @@ static inline  double background_S_function(struct background *pba, double H, do
 
 
     double S =   F(z,alpha,beta,gamma,delta) - 1.0;
-    *S_p =       0.;//Fp(z,alpha,beta,gamma,delta);
+    *S_p =       Fp(z,alpha,beta,gamma,delta);
     *S_pp =      Fpp(z,alpha,beta,gamma,delta);
     // Convert derivatives to respect to conformal time \tau
     // d/dtau = -H(1+z) d/dz
