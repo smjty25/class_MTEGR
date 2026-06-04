@@ -1,3 +1,4 @@
+#include <math.h>
 /**
  * Smooth step function using cosine (C-infinity continuous)
  * Maps x from [x0,x1] to [f0,f1]

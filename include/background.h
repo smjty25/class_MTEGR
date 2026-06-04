@@ -381,6 +381,8 @@ static inline  double background_S_function(struct background *pba, double H, do
     double gamma = pba->mtegr_gamma;
     double delta = pba->mtegr_delta;
 
+    gamma = max(gamma , 0.0); //ansatz dependent
+    delta = fmin(gamma, delta);//ansatz dependent
 
     double S =   F(z,alpha,beta,gamma,delta) - 1.0;
     *S_p =       Fp(z,alpha,beta,gamma,delta);
