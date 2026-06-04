@@ -5,3 +5,4 @@ Based on this paper:
 
 https://arxiv.org/abs/2311.07749
 
+Synchronous gauge is working.
