@@ -9092,18 +9092,22 @@ int perturbations_derivs(double tau,
           dy[pv->index_pt_delta_cdm] = -(k2 + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/denom * pvecmetric[ppw->index_mt_h_prime]
           + ((2.*k2 - 1.5 * a_prime_over_a * a_prime_over_a) * S_beta  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ denom * y[pv->index_pt_delta_cdm];
         */
-      //if(denom<tol)
+      if(fabs(denom)<tol || k2<tol)
         dy[pv->index_pt_delta_g] = -4./3.*(theta_g+metric_continuity); //mtegr added
-      //else
-      //  dy[pv->index_pt_delta_g] = -(4.*k2/3. + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/denom * pvecmetric[ppw->index_mt_h_prime]
-      //    + ((2.*k2 - 3.0 * a_prime_over_a * a_prime_over_a) * S_beta  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ denom * y[pv->index_pt_delta_g]
-      //    ;
+      else
+        dy[pv->index_pt_delta_g] = -(4.*k2/3. + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/denom * pvecmetric[ppw->index_mt_h_prime]
+          + ((2.*k2 - 3.0 * a_prime_over_a * a_prime_over_a) * S_beta  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ denom * y[pv->index_pt_delta_g]
+          -4./3.*(1.-9.*a_prime_over_a * S_beta/2./k2) * theta_g;
 
     }
 
     /** - ---> baryon density */
-
-    dy[pv->index_pt_delta_b] = -(theta_b+metric_continuity);
+    if(fabs(denom)<tol || k2<tol)
+      dy[pv->index_pt_delta_b] = -(theta_b+metric_continuity);
+    else
+      dy[pv->index_pt_delta_b] = -(k2 + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/denom * pvecmetric[ppw->index_mt_h_prime]
+          + ((2.*k2 - 3.0/2.0 * a_prime_over_a * a_prime_over_a) * S_beta  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ denom * y[pv->index_pt_delta_b]
+          -(1.-9.*a_prime_over_a * S_beta/2./k2) * theta_b;
 
     /** - ---> baryon velocity (depends on tight-coupling approximation=tca) */
 
@@ -9159,7 +9163,7 @@ int perturbations_derivs(double tau,
         /** - -----> photon temperature velocity */
 
         dy[pv->index_pt_theta_g] =
-          k2*(delta_g/4.-s2_squared*y[pv->index_pt_shear_g])
+          k2*(delta_g/4.-s2_squared*y[pv->index_pt_shear_g]/(1.0+S_val))
           + metric_euler
           + pvecthermo[pth->index_th_dkappa]*(theta_b-theta_g);
 
@@ -9266,7 +9270,7 @@ int perturbations_derivs(double tau,
       /** - ----> synchronous gauge: cdm density only (velocity set to zero by definition of the gauge) */
 
       if (ppt->gauge == synchronous) {
-        if(denom<tol)
+        if(fabs(denom)<tol)
           dy[pv->index_pt_delta_cdm] = -metric_continuity; /* cdm density */
         else
           dy[pv->index_pt_delta_cdm] = -(k2 + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/denom * pvecmetric[ppw->index_mt_h_prime]
