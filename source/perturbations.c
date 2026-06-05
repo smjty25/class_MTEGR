@@ -8873,7 +8873,7 @@ int perturbations_derivs(double tau,
     double S_beta = Sp_val / (1. + S_val);
     double S_beta_p = Spp_val/(1.+S_val) - S_beta * S_beta;
     double denom = 2. * k2 + 3. * S_beta * a_prime_over_a;
-    double tol = 1e-10;
+    double tol = 1e-7;
 
 
   if (pba->has_idm == _TRUE_) {
@@ -9085,13 +9085,7 @@ int perturbations_derivs(double tau,
     /** - ---> photon temperature density */
 
     if (ppw->approx[ppw->index_ap_rsa] == (int)rsa_off) {
-      /*
-        if(denom<tol)
-          dy[pv->index_pt_delta_cdm] = -metric_continuity; 
-        else
-          dy[pv->index_pt_delta_cdm] = -(k2 + a_prime_over_a * S_beta + S_beta * S_beta - S_beta_p)/denom * pvecmetric[ppw->index_mt_h_prime]
-          + ((2.*k2 - 1.5 * a_prime_over_a * a_prime_over_a) * S_beta  + 3. * a_prime_over_a * (2. * S_beta * S_beta - S_beta_p))/ denom * y[pv->index_pt_delta_cdm];
-        */
+
       if(fabs(denom)<tol || k2<tol)
         dy[pv->index_pt_delta_g] = -4./3.*(theta_g+metric_continuity); //mtegr added
       else
