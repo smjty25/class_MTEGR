@@ -381,12 +381,11 @@ static inline  double background_S_function(struct background *pba, double H, do
     double gamma = pba->mtegr_gamma;
     double delta = pba->mtegr_delta;
 
-    gamma = fmax(gamma , 0.0); //ansatz dependent
-    delta = fmin(gamma, delta);//ansatz dependent
+    double F_0 = F(0.,alpha,beta,gamma,delta);
 
-    double S =   F(z,alpha,beta,gamma,delta) - 1.0;
-    *S_p =       Fp(z,alpha,beta,gamma,delta);
-    *S_pp =      Fpp(z,alpha,beta,gamma,delta);
+    double S =   F(z,alpha,beta,gamma,delta)/F_0 - 1.0;
+    *S_p =       Fp(z,alpha,beta,gamma,delta)/F_0;
+    *S_pp =      Fpp(z,alpha,beta,gamma,delta)/F_0;
     // Convert derivatives to respect to conformal time \tau
     // d/dtau = -H(1+z) d/dz
     
