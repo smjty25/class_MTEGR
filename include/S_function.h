@@ -1,26 +1,20 @@
 #include <math.h>
-/**
- * Smooth step function using cosine (C-infinity continuous)
- * Maps x from [x0,x1] to [f0,f1]
- */
+
+/*
 static inline double smooth_step(double x, double x0, double x1, double f0, double f1) {
     double y = (x - x0) / (x1 - x0);  // y in [0,1]
     // Use (1 - cos(pi*y))/2 which smoothly goes from 0 to 1
     double poly = 0.5 * (1.0 - cos(M_PI * y));
     return f0 + (f1 - f0) * poly;
 }
-/**
- * First derivative of cosine smooth_step with respect to x
- */
+
 static inline double smooth_step_p(double x, double x0, double x1, double f0, double f1) {
     double y = (x - x0) / (x1 - x0);
     double factor = (f1 - f0) / (x1 - x0);
     // d/dx[(1-cos(pi*y))/2] = (pi/2)*sin(pi*y) * dy/dx
     return factor * 0.5 * M_PI * sin(M_PI * y);
 }
-/**
- * Second derivative of cosine smooth_step with respect to x
- */
+
 static inline double smooth_step_pp(double x, double x0, double x1, double f0, double f1) {
     double y = (x - x0) / (x1 - x0);
     double factor = (f1 - f0) / ((x1 - x0) * (x1 - x0));
@@ -42,9 +36,7 @@ inline double F(double x, double alpha, double beta, double gamma, double delta)
         return alpha;
     }
 }
-/**
-* First derivative of F(x).
-*/
+
 inline double Fp(double x, double alpha, double beta, double gamma, double delta) {
     double left = gamma;
     double center = gamma + delta/2.0;
@@ -57,9 +49,7 @@ inline double Fp(double x, double alpha, double beta, double gamma, double delta
         return smooth_step_p(x, center, right, beta, alpha);
     }
 }
-/**
-* Second derivative of F(x).
-*/
+
 inline double Fpp(double x, double alpha, double beta, double gamma, double delta) {
     double left = gamma;
     double center = gamma + delta/2.0;
@@ -71,4 +61,27 @@ inline double Fpp(double x, double alpha, double beta, double gamma, double delt
     } else {  // x between gamma and gamma+delta (including gamma)
         return smooth_step_pp(x, center, right, beta, alpha);
     }
+}
+*/
+
+inline double F(double x, double alpha, double beta, double gamma, double delta) {
+    // F(x) = 1.0 + alpha * x * exp(-x/beta)
+    return 1.0 + alpha * x * exp(-x / beta) / beta;
+}
+
+/**
+* First derivative of F(x).
+*/
+inline double Fp(double x, double alpha, double beta, double gamma, double delta) {
+    // F'(x) = alpha * exp(-x/beta) * (1 - x/beta)
+    return alpha * exp(-x / beta) * (1.0 - x / beta) / beta;
+}
+
+/**
+* Second derivative of F(x).
+*/
+inline double Fpp(double x, double alpha, double beta, double gamma, double delta) {
+    // F''(x) = alpha * exp(-x/beta) * (x/beta^2 - 2/beta)
+    // = alpha * exp(-x/beta) * (x - 2*beta) / (beta^2)
+    return alpha * exp(-x / beta) * (x / (beta * beta) - 2.0 / beta) / beta;
 }
