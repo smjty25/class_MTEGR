@@ -65,23 +65,31 @@ inline double Fpp(double x, double alpha, double beta, double gamma, double delt
 */
 
 inline double F(double x, double alpha, double beta, double gamma, double delta) {
-    // F(x) = 1.0 + alpha * x * exp(-x/beta)
-    return 1.0 + alpha * x * exp(-x / beta) / beta;
+    // F(x) = 1.0 + (alpha * x + beta * x * x) * exp(-x/delta)
+    return 1.0 + (alpha * x + beta * x * x) * exp(-x / delta);
 }
 
 /**
 * First derivative of F(x).
 */
 inline double Fp(double x, double alpha, double beta, double gamma, double delta) {
-    // F'(x) = alpha * exp(-x/beta) * (1 - x/beta)
-    return alpha * exp(-x / beta) * (1.0 - x / beta) / beta;
+    // Let g(x) = alpha*x + beta*x^2
+    // g'(x) = alpha + 2*beta*x
+    // F'(x) = g'(x)*exp(-x/delta) + g(x)*exp(-x/delta)*(-1/delta)
+    //        = exp(-x/delta) * [g'(x) - g(x)/delta]
+    double g = alpha * x + beta * x * x;
+    double gp = alpha + 2.0 * beta * x;
+    return exp(-x / delta) * (gp - g / delta);
 }
 
 /**
 * Second derivative of F(x).
 */
 inline double Fpp(double x, double alpha, double beta, double gamma, double delta) {
-    // F''(x) = alpha * exp(-x/beta) * (x/beta^2 - 2/beta)
-    // = alpha * exp(-x/beta) * (x - 2*beta) / (beta^2)
-    return alpha * exp(-x / beta) * (x / (beta * beta) - 2.0 / beta) / beta;
+    // F''(x) = exp(-x/delta) * [g''(x) - 2*g'(x)/delta + g(x)/delta^2]
+    // where g''(x) = 2*beta
+    double g = alpha * x + beta * x * x;
+    double gp = alpha + 2.0 * beta * x;
+    double gpp = 2.0 * beta;
+    return exp(-x / delta) * (gpp - 2.0 * gp / delta + g / (delta * delta));
 }
