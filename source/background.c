@@ -431,21 +431,21 @@ int background_functions(
   /** - compute each component's density and pressure */
 
   /* photons */
-  pvecback[pba->index_bg_rho_g] = pba->Omega0_g * pow(pba->H0,2) / pow(a,4);
+  pvecback[pba->index_bg_rho_g] = pba->Omega0_g * pow(pba->H0,2) / pow(a,4) / (1.0+S_val);
   rho_tot += pvecback[pba->index_bg_rho_g];
   p_tot += (1./3.) * pvecback[pba->index_bg_rho_g];
   dp_dloga += -(4./3.) * pvecback[pba->index_bg_rho_g];
   rho_r += pvecback[pba->index_bg_rho_g];
 
   /* baryons */
-  pvecback[pba->index_bg_rho_b] = pba->Omega0_b * pow(pba->H0,2) / pow(a,3);
+  pvecback[pba->index_bg_rho_b] = pba->Omega0_b * pow(pba->H0,2) / pow(a,3) / (1.0+S_val);
   rho_tot += pvecback[pba->index_bg_rho_b];
   p_tot += 0;
   rho_m += pvecback[pba->index_bg_rho_b];
 
   /* cdm */
   if (pba->has_cdm == _TRUE_) {
-    pvecback[pba->index_bg_rho_cdm] = pba->Omega0_cdm * pow(pba->H0,2) / pow(a,3);
+    pvecback[pba->index_bg_rho_cdm] = pba->Omega0_cdm * pow(pba->H0,2) / pow(a,3) / (1.0+S_val);
     rho_tot += pvecback[pba->index_bg_rho_cdm];
     p_tot += 0.;
     rho_m += pvecback[pba->index_bg_rho_cdm];
@@ -453,7 +453,7 @@ int background_functions(
 
   /* idm */
   if (pba->has_idm == _TRUE_) {
-    pvecback[pba->index_bg_rho_idm] = pba->Omega0_idm * pow(pba->H0,2) / pow(a,3);
+    pvecback[pba->index_bg_rho_idm] = pba->Omega0_idm * pow(pba->H0,2) / pow(a,3) / (1.0+S_val);
     rho_tot += pvecback[pba->index_bg_rho_idm];
     p_tot += 0.;
     rho_m += pvecback[pba->index_bg_rho_idm];
@@ -540,7 +540,7 @@ int background_functions(
 
   /* Lambda */
   if (pba->has_lambda == _TRUE_) {
-    pvecback[pba->index_bg_rho_lambda] = pba->Omega0_lambda * pow(pba->H0,2);
+    pvecback[pba->index_bg_rho_lambda] = pba->Omega0_lambda * pow(pba->H0,2)/(1.0+S_val);
     rho_tot += pvecback[pba->index_bg_rho_lambda];
     p_tot -= pvecback[pba->index_bg_rho_lambda];
   }
@@ -566,7 +566,7 @@ int background_functions(
 
   /* relativistic neutrinos (and all relativistic relics) */
   if (pba->has_ur == _TRUE_) {
-    pvecback[pba->index_bg_rho_ur] = pba->Omega0_ur * pow(pba->H0,2) / pow(a,4);
+    pvecback[pba->index_bg_rho_ur] = pba->Omega0_ur * pow(pba->H0,2) / pow(a,4)/(1.0+S_val);
     rho_tot += pvecback[pba->index_bg_rho_ur];
     p_tot += (1./3.) * pvecback[pba->index_bg_rho_ur];
     dp_dloga += -(4./3.) * pvecback[pba->index_bg_rho_ur];
@@ -575,7 +575,7 @@ int background_functions(
 
   /* interacting dark radiation */
   if (pba->has_idr == _TRUE_) {
-    pvecback[pba->index_bg_rho_idr] = pba->Omega0_idr * pow(pba->H0,2) / pow(a,4);
+    pvecback[pba->index_bg_rho_idr] = pba->Omega0_idr * pow(pba->H0,2) / pow(a,4)/(1.0+S_val);
     rho_tot += pvecback[pba->index_bg_rho_idr];
     p_tot += (1./3.) * pvecback[pba->index_bg_rho_idr];
     rho_r += pvecback[pba->index_bg_rho_idr];
@@ -2213,6 +2213,12 @@ int background_initial_conditions(
                "Search for initial scale factor a such that all ncdm species are relativistic failed.");
   }
 
+  double z = 1.0/a - 1.0;
+  double S_val, Sp_val, Spp_val;
+  
+  S_val = background_S_function(pba,  pvecback[pba->index_bg_H], 0. , z, &Sp_val , &Spp_val);//not calculating Spp properly
+
+
   /* Set initial values of {B} variables: */
   Omega_rad = pba->Omega0_g;
   if (pba->has_ur == _TRUE_) {
@@ -2221,7 +2227,7 @@ int background_initial_conditions(
   if (pba->has_idr == _TRUE_) {
     Omega_rad += pba->Omega0_idr;
   }
-  rho_rad = Omega_rad*pow(pba->H0,2)/pow(a,4);
+  rho_rad = Omega_rad*pow(pba->H0,2)/pow(a,4) / (1.+S_val);
   if (pba->has_ncdm == _TRUE_) {
     /** - We must add the relativistic contribution from NCDM species */
     rho_rad += rho_ncdm_rel_tot;
@@ -2229,7 +2235,7 @@ int background_initial_conditions(
   if (pba->has_dcdm == _TRUE_) {
     /* Remember that the critical density today in CLASS conventions is H0^2 */
     pvecback_integration[pba->index_bi_rho_dcdm] =
-      pba->Omega_ini_dcdm*pba->H0*pba->H0*pow(a,-3);
+      pba->Omega_ini_dcdm*pba->H0*pba->H0*pow(a,-3) / (1.+S_val);
     if (pba->background_verbose > 3)
       printf("Density is %g. Omega_ini=%g\n",pvecback_integration[pba->index_bi_rho_dcdm],pba->Omega_ini_dcdm);
   }
@@ -2245,7 +2251,7 @@ int background_initial_conditions(
        * ignoring f(a) in the Hubble rate.
        */
       f = 1./3.*pow(a,6)*pvecback_integration[pba->index_bi_rho_dcdm]*pba->Gamma_dcdm/pow(pba->H0,3)/sqrt(Omega_rad);
-      pvecback_integration[pba->index_bi_rho_dr] = f*pba->H0*pba->H0/pow(a,4);
+      pvecback_integration[pba->index_bi_rho_dr] = f*pba->H0*pba->H0/pow(a,4)/(1.+S_val);
     }
     else{
       /** There is also a space reserved for a future case where dr is not sourced by dcdm */
@@ -2256,7 +2262,7 @@ int background_initial_conditions(
   if (pba->has_fld == _TRUE_) {
 
     /* rho_fld today */
-    rho_fld_today = pba->Omega0_fld * pow(pba->H0,2);
+    rho_fld_today = pba->Omega0_fld * pow(pba->H0,2) / (1.+S_val);
 
     /* integrate rho_fld(a) from a_ini to a_0, to get rho_fld(a_ini) given rho_fld(a0) */
     class_call(background_w_fld(pba,a,&w_fld,&dw_over_da_fld,&integral_fld), pba->error_message, pba->error_message);
