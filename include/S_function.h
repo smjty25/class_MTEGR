@@ -65,31 +65,30 @@ inline double Fpp(double x, double alpha, double beta, double gamma, double delt
 */
 
 inline double F(double x, double alpha, double beta, double gamma, double delta) {
-    // F(x) = 1.0 + (alpha * x + beta * x * x) * exp(-x/delta)
-    return 1.0 + (alpha * x + beta * x * x) * exp(-x / delta);
+    // F(x) = 1.0 + (beta * x * x * exp(2.0 - 2.0 * x / delta)) / (delta * delta)
+    return 1.0 + (beta * x * x * exp(2.0 - 2.0 * x / delta)) / (delta * delta);
 }
 
 /**
 * First derivative of F(x).
 */
 inline double Fp(double x, double alpha, double beta, double gamma, double delta) {
-    // Let g(x) = alpha*x + beta*x^2
-    // g'(x) = alpha + 2*beta*x
-    // F'(x) = g'(x)*exp(-x/delta) + g(x)*exp(-x/delta)*(-1/delta)
-    //        = exp(-x/delta) * [g'(x) - g(x)/delta]
-    double g = alpha * x + beta * x * x;
-    double gp = alpha + 2.0 * beta * x;
-    return exp(-x / delta) * (gp - g / delta);
+    // Let h(x) = beta * x^2 * exp(2 - 2x/delta) / delta^2
+    // h'(x) = (beta/delta^2) * [2x * exp(2 - 2x/delta) + x^2 * exp(2 - 2x/delta) * (-2/delta)]
+    //        = (beta * exp(2 - 2x/delta) / delta^2) * [2x - 2x^2/delta]
+    //        = (2 * beta * x * exp(2 - 2x/delta) / delta^2) * (1 - x/delta)
+    double exp_term = exp(2.0 - 2.0 * x / delta);
+    return (2.0 * beta * x * exp_term / (delta * delta)) * (1.0 - x / delta);
 }
 
 /**
 * Second derivative of F(x).
 */
 inline double Fpp(double x, double alpha, double beta, double gamma, double delta) {
-    // F''(x) = exp(-x/delta) * [g''(x) - 2*g'(x)/delta + g(x)/delta^2]
-    // where g''(x) = 2*beta
-    double g = alpha * x + beta * x * x;
-    double gp = alpha + 2.0 * beta * x;
-    double gpp = 2.0 * beta;
-    return exp(-x / delta) * (gpp - 2.0 * gp / delta + g / (delta * delta));
+    // h''(x) = (2*beta/delta^2) * exp(2 - 2x/delta) * [1 - 4x/delta + 2x^2/delta^2]
+    // (derived from product rule on h'(x))
+    double exp_term = exp(2.0 - 2.0 * x / delta);
+    double x_over_delta = x / delta;
+    return (2.0 * beta * exp_term / (delta * delta)) * 
+           (1.0 - 4.0 * x_over_delta + 2.0 * x_over_delta * x_over_delta);
 }
